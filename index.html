@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suivi Production</title>
+
+  <!-- Pour iPhone comme app -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0d6efd">
+
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 20px; }
+    input, button { width: 100%; padding: 10px; margin: 5px 0; }
+    ul { list-style: none; padding: 0; }
+    li { background: #eee; padding: 10px; margin: 5px 0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>🛠️ Suivi Production</h1>
+
+  <input id="machine" placeholder="Nom de la machine" />
+  <input id="quantite" type="number" placeholder="Quantité produite" />
+  <button onclick="ajouter()">Ajouter</button>
+
+  <h2>📋 Historique</h2>
+  <ul id="liste"></ul>
+
+  <script>
+    // On charge les données enregistrées
+    let productions = JSON.parse(localStorage.getItem("prod") || "[]");
+
+    function afficher() {
+      const liste = document.getElementById("liste");
+      liste.innerHTML = "";
+      productions.forEach(p => {
+        let li = document.createElement("li");
+        li.textContent = `🛠️ ${p.machine} – ${p.quantite} pièces`;
+        liste.appendChild(li);
+      });
+    }
+
+    function ajouter() {
+      const machine = document.getElementById("machine").value;
+      const quantite = document.getElementById("quantite").value;
+      if (!machine || !quantite) return alert("Remplis les deux champs !");
+      productions.push({ machine, quantite });
+      localStorage.setItem("prod", JSON.stringify(productions));
+      afficher();
+      document.getElementById("machine").value = "";
+      document.getElementById("quantite").value = "";
+    }
+
+    // Dès que la page s'ouvre, on affiche les données
+    afficher();
+
+    // PWA = App installable
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</body>
+</html>
